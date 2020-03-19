@@ -14,46 +14,33 @@ const inputCitiesFrom = document.querySelector('.input__cities-from'),
 
 //Функции
 
-//Функция получения совпадающий с запросом городов
-const getCitiesList = (list, input) => {
-    return list.filter(function(item) {
+//Функция получения совпадающий с запросом городов и вывода его на экран
+const showCities = (list, input, dropdown) => {
+    dropdown.textContent = '';
+
+    const citiesMatchList = list.filter(function(item) {
         item = item.toLowerCase();
         if (input.value !== '')
             return item.startsWith(input.value.toLowerCase());
     });
-};
-
-const createLi = text => {
-    let liElem = document.createElement('li');
-    liElem.classList.add('dropdown__city');
-    liElem.textContent = text;
-    return liElem;
-}
-
-inputCitiesFrom.addEventListener('input', () => {
-    dropDownCitiesFrom.textContent = '';
-    const citiesMatchList = getCitiesList(citiesList, inputCitiesFrom);
 
     citiesMatchList.forEach((item) => {
-        const li = createLi(item);
-        dropDownCitiesFrom.append(li);
-        li.addEventListener('click', function() {
-            inputCitiesFrom.value = this.textContent;
-            dropDownCitiesFrom.textContent = '';
+        let liElem = document.createElement('li');
+        liElem.classList.add('dropdown__city');
+        liElem.textContent = item;
+        dropdown.append(liElem);
+        liElem.addEventListener('click', function(event) {
+            input.value = this.textContent;
+            dropdown.textContent = '';
         });
     });
+};
+
+//Оброботчики событий
+inputCitiesFrom.addEventListener('input', () => {
+    showCities(citiesList, inputCitiesFrom, dropDownCitiesFrom);
 });
 
 inputCitiesTo.addEventListener('input', () => {
-    dropDownCitiesTo.textContent = '';
-    const citiesMatchList = getCitiesList(citiesList, inputCitiesTo);
-
-    citiesMatchList.forEach((item) => {
-        const li = createLi(item);
-        dropDownCitiesTo.append(li);
-        li.addEventListener('click', function() {
-            inputCitiesTo.value = this.textContent;
-            dropDownCitiesTo.textContent = '';
-        });
-    });
+    showCities(citiesList, inputCitiesTo, dropDownCitiesTo);
 });
