@@ -101,7 +101,7 @@ formSearch.addEventListener('submit', (event) => {
 
     let param = `?origin=${from}&destination=${to}&depart_date=${when}&one_way=true`;
 
-    getData(calendar + param, (data) => {
+    getData(proxy + calendar + param, (data) => {
         renderCheap(data, when);
     });
 });
@@ -109,7 +109,7 @@ formSearch.addEventListener('submit', (event) => {
 
 //Вызовы функций
 // getData('https://jsonplaceholder.typicode.com/photos/', (data) => {
-getData(citiesAPI, (data) => {
+getData(proxy + citiesAPI, (data) => {
     const dataCities = JSON.parse(data);
 
     citiesList = dataCities.filter((item) => {
