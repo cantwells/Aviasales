@@ -3,7 +3,7 @@ let citiesList = [];
 const citiesAPI = 'http://api.travelpayouts.com/data/ru/cities.json',
     proxy = 'https://cors-anywhere.herokuapp.com/',
     API_KEY = '38fced4ed2a88bfd782f3d4e16d17d58',
-    calendar = 'http://min-prices.aviasales.ru/calendar_preload/';
+    calendar = 'https://min-prices.aviasales.ru/calendar_preload/';
 
 // let param = '?origin=SVX&destination=KGD&depart_date=2020-05-25&one_way=true&token=' + API_KEY;
 
@@ -101,7 +101,7 @@ formSearch.addEventListener('submit', (event) => {
 
     let param = `?origin=${from}&destination=${to}&depart_date=${when}&one_way=true`;
 
-    getData(proxy + calendar + param, (data) => {
+    getData(calendar + param, (data) => {
         renderCheap(data, when);
     });
 });
@@ -109,7 +109,7 @@ formSearch.addEventListener('submit', (event) => {
 
 //Вызовы функций
 // getData('https://jsonplaceholder.typicode.com/photos/', (data) => {
-getData(proxy + citiesAPI, (data) => {
+getData(citiesAPI, (data) => {
     const dataCities = JSON.parse(data);
 
     citiesList = dataCities.filter((item) => {
