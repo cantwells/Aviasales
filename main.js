@@ -3,16 +3,21 @@ let citiesList = [];
 const citiesAPI = 'http://api.travelpayouts.com/data/ru/cities.json',
     proxy = 'https://cors-anywhere.herokuapp.com/',
     API_KEY = '38fced4ed2a88bfd782f3d4e16d17d58',
-    calendar = 'http://min-prices.aviasales.ru/calendar_preload';
+    calendar = 'http://min-prices.aviasales.ru/calendar_preload/';
 
-let param = '/?origin=SVX&destination=KGD&depart_date=2020-05-25&one_way=true'
+// let param = '?origin=SVX&destination=KGD&depart_date=2020-05-25&one_way=true&token=' + API_KEY;
 
 //Получаем элементы со страницы
 const inputCitiesFrom = document.querySelector('.input__cities-from'),
     dropDownCitiesFrom = document.querySelector('.dropdown__cities-from'),
     inputCitiesTo = document.querySelector('.input__cities-to'),
     dropDownCitiesTo = document.querySelector('.dropdown__cities-to'),
-    buttonSearch = document.querySelector('.button__search');
+    inputDateDepart = document.querySelector('.input__date-depart'),
+    formSearch = document.querySelector('.form-search');
+
+let from = '',
+    to = '',
+    when = '';
 
 //Функции
 
@@ -58,6 +63,25 @@ const showCities = (list, input, dropdown) => {
     });
 };
 
+const renderTicket = (ticket) => {
+    console.log(ticket);
+
+}
+
+// console renderTickets = (tickets) => {
+
+// }
+
+const renderCheap = (data, date) => {
+    const getTickets = JSON.parse(data).best_prices;
+
+    const cheapTicket = getTickets.find((item) => {
+        return item.depart_date == date;
+    });
+
+    renderTicket(cheapTicket);
+    // renderTickets( cheapTickets );
+};
 
 //Оброботчики событий
 inputCitiesFrom.addEventListener('input', () => {
@@ -67,6 +91,21 @@ inputCitiesFrom.addEventListener('input', () => {
 inputCitiesTo.addEventListener('input', () => {
     showCities(citiesList, inputCitiesTo, dropDownCitiesTo);
 });
+
+formSearch.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    from = citiesList.find((item) => { return inputCitiesFrom.value == item.name }).code;
+    to = citiesList.find((item) => { return inputCitiesTo.value == item.name }).code;
+    when = inputDateDepart.value;
+
+    let param = `?origin=${from}&destination=${to}&depart_date=${when}&one_way=true`;
+
+    getData(calendar + param, (data) => {
+        renderCheap(data, when);
+    });
+});
+
 
 //Вызовы функций
 // getData('https://jsonplaceholder.typicode.com/photos/', (data) => {
@@ -78,6 +117,10 @@ getData(proxy + citiesAPI, (data) => {
     });
 });
 
-getData(calendar + param, (data) => {
-    console.log(data);
-})
+// getData(proxy + calendar + param, (data) => {
+//     const saleTickets = JSON.parse(data).best_prices.filter((item) => {
+//         return item.depart_date == '2020-05-25';
+//     });
+
+//     console.log(saleTickets);
+// })
