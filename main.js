@@ -109,7 +109,7 @@ formSearch.addEventListener('submit', (event) => {
 
 //Вызовы функций
 // getData('https://jsonplaceholder.typicode.com/photos/', (data) => {
-getData(proxy + citiesAPI, (data) => {
+getData(citiesAPI, (data) => {
     const dataCities = JSON.parse(data);
 
     citiesList = dataCities.filter((item) => {
