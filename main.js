@@ -89,14 +89,7 @@ const renderTicket = (ticket) => {
 //Функция отрисовки остальных предложенных билетов
 const renderTickets = (tickets) => {
     tickets.sort(function compare(a, b) {
-        if (a.value < b.value) {
-            return -1;
-        }
-        if (a.value > b.value) {
-            return 1;
-        }
-        // a должно быть равным b
-        return 0;
+        return a.value - b.value;
     });
 
     console.log(tickets);
@@ -131,16 +124,20 @@ formSearch.addEventListener('submit', (event) => {
     event.preventDefault(); //отключаем поведение по умолчанию (перезагрузке при отправке формы)
 
     //Получаем нужный код города из списка городов соответсвующий вводимому значению в инпут
-    from = citiesList.find((item) => { return inputCitiesFrom.value == item.name }).code;
-    to = citiesList.find((item) => { return inputCitiesTo.value == item.name }).code;
+    from = citiesList.find((item) => { return inputCitiesFrom.value == item.name });
+    to = citiesList.find((item) => { return inputCitiesTo.value == item.name });
     when = inputDateDepart.value; //полчаем дату
 
-    //формируем строчку с параметрами для получения массивов с билетами
-    let param = `?origin=${from}&destination=${to}&one_way=true`;
+    if (from && to) {
+        //формируем строчку с параметрами для получения массивов с билетами
+        let param = `?origin=${from.code}&destination=${to.code}&one_way=true`;
 
-    getData(calendar + param, (data) => {
-        renderCheap(data, when);
-    });
+        getData(calendar + param, (data) => {
+            renderCheap(data, when);
+        });
+    } else {
+        alert('Ошибка ввода города');
+    }
 });
 
 
