@@ -22,7 +22,8 @@ let from = '',
     to = '',
     when = '';
 
-//Функции
+
+//Объявление функций
 
 //Функция для получения данных через AJAX
 const getData = (url, callback) => {
@@ -80,10 +81,12 @@ const showCities = (list, input, dropdown) => {
     });
 };
 
+//Функция отрисовки билета на нужную дату
 const renderTicket = (ticket) => {
     console.log(ticket);
 }
 
+//Функция отрисовки остальных предложенных билетов
 const renderTickets = (tickets) => {
     tickets.sort(function compare(a, b) {
         if (a.value < b.value) {
@@ -99,7 +102,7 @@ const renderTickets = (tickets) => {
     console.log(tickets);
 }
 
-//Функция для отрисовки билетов, которая получает нужные данные, а потом передает соответсвующим функциям
+//Общая Функция отрисовки билетов, которая получает нужные данные, а потом передает соответсвующим функциям
 const renderCheap = (data, date) => {
     const cheapTicketsYear = JSON.parse(data).best_prices;
 
@@ -112,7 +115,10 @@ const renderCheap = (data, date) => {
 
 };
 
+
+
 //Оброботчики событий
+
 inputCitiesFrom.addEventListener('input', () => {
     showCities(citiesList, inputCitiesFrom, dropDownCitiesFrom);
 });
