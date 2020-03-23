@@ -1,5 +1,6 @@
 //БД городов
 let citiesList = [];
+
 const citiesAPI = 'http://api.travelpayouts.com/data/ru/cities.json',
     proxy = 'https://cors-anywhere.herokuapp.com/',
     API_KEY = '38fced4ed2a88bfd782f3d4e16d17d58',
@@ -51,6 +52,18 @@ const showCities = (list, input, dropdown) => {
             return item.startsWith(input.value.toLowerCase());
     });
 
+    //отсортируем в соответствии с полем name
+    citiesMatchList.sort(function compare(a, b) {
+        if (a.name < b.name) {
+            return -1;
+        }
+        if (a.name > b.name) {
+            return 1;
+        }
+        // a должно быть равным b
+        return 0;
+    });
+
     citiesMatchList.forEach((item) => {
         let liElem = document.createElement('li');
         liElem.classList.add('dropdown__city');
@@ -65,22 +78,33 @@ const showCities = (list, input, dropdown) => {
 
 const renderTicket = (ticket) => {
     console.log(ticket);
-
 }
 
-// console renderTickets = (tickets) => {
-
-// }
-
-const renderCheap = (data, date) => {
-    const getTickets = JSON.parse(data).best_prices;
-
-    const cheapTicket = getTickets.find((item) => {
-        return item.depart_date == date;
+const renderTickets = (tickets) => {
+    tickets.sort(function compare(a, b) {
+        if (a.value < b.value) {
+            return -1;
+        }
+        if (a.value > b.value) {
+            return 1;
+        }
+        // a должно быть равным b
+        return 0;
     });
 
-    renderTicket(cheapTicket);
-    // renderTickets( cheapTickets );
+    console.log(tickets);
+}
+
+const renderCheap = (data, date) => {
+    const cheapTicketsYear = JSON.parse(data).best_prices;
+
+    const cheapTicketDay = cheapTicketsYear.filter((item) => {
+        return item.depart_date === date;
+    });
+
+    renderTicket(cheapTicketDay);
+    renderTickets(cheapTicketsYear);
+
 };
 
 //Оброботчики событий
@@ -99,7 +123,7 @@ formSearch.addEventListener('submit', (event) => {
     to = citiesList.find((item) => { return inputCitiesTo.value == item.name }).code;
     when = inputDateDepart.value;
 
-    let param = `?origin=${from}&destination=${to}&depart_date=${when}&one_way=true`;
+    let param = `?origin=${from}&destination=${to}&one_way=true`;
 
     getData(calendar + param, (data) => {
         renderCheap(data, when);
@@ -109,7 +133,7 @@ formSearch.addEventListener('submit', (event) => {
 
 //Вызовы функций
 // getData('https://jsonplaceholder.typicode.com/photos/', (data) => {
-getData(citiesAPI, (data) => {
+getData(proxy + citiesAPI, (data) => {
     const dataCities = JSON.parse(data);
 
     citiesList = dataCities.filter((item) => {
