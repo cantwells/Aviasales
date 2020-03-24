@@ -40,7 +40,9 @@ const getData = (url, callback) => {
         if (request.status == '200') {
             callback(request.response);
         } else {
-            console.error(request.status);
+            const err = document.createElement('h2');
+            err.textContent = 'Не известное направление для полётов';
+            wrapperError.append(err);
         }
 
     });
@@ -202,7 +204,7 @@ formSearch.addEventListener('submit', (event) => {
     if (from && to) {
         //формируем строчку с параметрами для получения массивов с билетами
         let param = `?origin=${from.code}&destination=${to.code}&one_way=true`;
-        // console.log(param);
+        console.log(param);
         getData(calendar + param, (data) => {
             renderCheap(data, when);
         });
