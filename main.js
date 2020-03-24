@@ -169,7 +169,13 @@ const renderCheap = (data, date) => {
     console.log(cheapTicketsYear);
 
 
-    renderTicket(cheapTicketDay);
+    if (cheapTicketDay.length) {
+        renderTicket(cheapTicketDay);
+    } else {
+        const err = document.createElement('h2');
+        err.textContent = 'На выбранную дату нет рейсов';
+        wrapperError.append(err);
+    }
     renderTickets(cheapTicketsYear);
 };
 
