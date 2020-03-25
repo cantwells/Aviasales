@@ -152,6 +152,7 @@ input {
     -webkit-transition: all .3s;
     -o-transition: all .3s;
     transition: all .3s;
+    outline: none;
 }
 
 .button:hover {
