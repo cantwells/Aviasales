@@ -144,17 +144,20 @@ const createCard = (ticketObj) => {
         </div> 
     `;
     article.insertAdjacentHTML('afterbegin', deep);
+
     return article;
 }
 
 //Функция отрисовки билета на нужную дату
 const renderTicket = (obj) => {
+    cheapestTicket.innerHTML = '<h2>Самый дешевый билет на выбранную дату</h2>';
     const ticket = createCard(obj[0]);
     cheapestTicket.append(ticket);
 }
 
 //Функция отрисовки остальных предложенных билетов
 const renderTickets = (tickets) => {
+    otherCheapTickets.innerHTML = '<h2>Самые дешевые билеты на другие даты</h2>';
     tickets.sort(function compare(a, b) {
         return a.value - b.value;
     });
@@ -167,9 +170,6 @@ const renderCheap = (data, date) => {
     const cheapTicketDay = cheapTicketsYear.filter((item) => {
         return item.depart_date === date;
     });
-    console.log(cheapTicketDay);
-    console.log(cheapTicketsYear);
-
 
     if (cheapTicketDay.length) {
         renderTicket(cheapTicketDay);
@@ -204,7 +204,7 @@ formSearch.addEventListener('submit', (event) => {
     if (from && to) {
         //формируем строчку с параметрами для получения массивов с билетами
         let param = `?origin=${from.code}&destination=${to.code}&one_way=true`;
-        console.log(param);
+        // console.log(param);
         getData(calendar + param, (data) => {
             renderCheap(data, when);
         });
