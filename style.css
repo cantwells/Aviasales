@@ -123,6 +123,10 @@ input {
     color: #d84d00;
 }
 
+.dropdown__city.active {
+    color: #d84d00;
+}
+
 .button {
     display: -webkit-box;
     display: -ms-flexbox;

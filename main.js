@@ -5,7 +5,8 @@ let citiesList = [];
 const citiesAPI = 'http://api.travelpayouts.com/data/ru/cities.json',
     proxy = 'https://cors-anywhere.herokuapp.com/',
     API_KEY = '38fced4ed2a88bfd782f3d4e16d17d58',
-    calendar = 'https://min-prices.aviasales.ru/calendar_preload/';
+    calendar = 'https://min-prices.aviasales.ru/calendar_preload/',
+    MAX_COUNT = '5';
 
 // let param = '?origin=SVX&destination=KGD&depart_date=2020-05-25&one_way=true&token=' + API_KEY;
 
@@ -23,7 +24,8 @@ const inputCitiesFrom = document.querySelector('.input__cities-from'),
 //Объявление
 let from = '',
     to = '',
-    when = '';
+    when = '',
+    idx = -1;
 
 
 //Объявление функций
@@ -84,6 +86,7 @@ const showCities = (list, input, dropdown) => {
             dropdown.textContent = '';
         });
     });
+    if (input.value.length === 1) idx = -1;
 };
 
 //Функция получения названия города по коду
@@ -113,36 +116,49 @@ const getCorrectDate = (date) => {
     })
 }
 
+const getLinkAviasales = (obj) => {
+
+    //https://www.aviasales.ru/search/SVX2905KGD1
+    let link = 'https://www.aviasales.ru/search/';
+    link += obj.origin;
+    let day = new Date(obj.depart_date).getDate();
+    link += day < 10 ? '0' + day : day;
+    let month = new Date(obj.depart_date).getMonth() + 1;
+    link += month < 10 ? '0' + month : month;
+    link += obj.destination;
+    link += '1';
+    return link;
+}
+
 //Фукция создания карточки
 const createCard = (ticketObj) => {
     const article = document.createElement('article');
     article.classList.add('ticket');
     let deep = '';
-
     deep = `
-        <h3 class="agent">${ticketObj.gate}</h3>
-        <div class="ticket__wrapper">
-            <div class="left-side">
-                <a href="https://www.aviasales.ru/search/SVX2905KGD1" class="button button__buy">Купить
-                    за ${ticketObj.value}₽</a>
+    <h3 class="agent">${ticketObj.gate}</h3>
+    <div class="ticket__wrapper">
+    <div class="left-side">
+    <a href="${getLinkAviasales(ticketObj)}" target="_blank" class="button button__buy">Купить
+            за ${ticketObj.value}₽</a>
             </div>
             <div class="right-side">
-                <div class="block-left">
-                    <div class="city__from">Вылет из города:
-                        <span class="city__name">${getCityName(ticketObj.origin)}</span>
-                    </div>
-                    <div class="date">${getCorrectDate(ticketObj.depart_date)}</div>
-                </div>
-        
-                <div class="block-right">
-                    <div class="changes">${getTransfer(ticketObj.number_of_changes)}</div>
-                    <div class="city__to">Город назначения:
-                        <span class="city__name">${getCityName(ticketObj.destination)}</span>
-                    </div>
-                </div>
+            <div class="block-left">
+            <div class="city__from">Вылет из города:
+            <span class="city__name">${getCityName(ticketObj.origin)}</span>
             </div>
-        </div> 
-    `;
+            <div class="date">${getCorrectDate(ticketObj.depart_date)}</div>
+            </div>
+            
+            <div class="block-right">
+            <div class="changes">${getTransfer(ticketObj.number_of_changes)}</div>
+            <div class="city__to">Город назначения:
+            <span class="city__name">${getCityName(ticketObj.destination)}</span>
+            </div>
+            </div>
+            </div>
+            </div> 
+            `;
     article.insertAdjacentHTML('afterbegin', deep);
 
     return article;
@@ -161,6 +177,11 @@ const renderTickets = (tickets) => {
     tickets.sort(function compare(a, b) {
         return a.value - b.value;
     });
+
+    for (let i = 0; i < tickets.length && i <= MAX_COUNT; i++) {
+        const ticket = createCard(tickets[i]);
+        otherCheapTickets.append(ticket);
+    }
 }
 
 //Общая Функция отрисовки билетов, которая получает нужные данные, а потом передает соответсвующим функциям
@@ -181,6 +202,37 @@ const renderCheap = (data, date) => {
     renderTickets(cheapTicketsYear);
 };
 
+//Функция управления лавишами
+
+const keyControl = (event, input, dropdown) => {
+    const Lis = dropdown.children;
+    let length = Lis.length - 1;
+
+    switch (event.keyCode) {
+        case 38:
+            if (idx >= 0)
+                Lis.item(idx).classList.remove('active');
+            idx--;
+            if (idx < 0) idx = length;
+            Lis.item(idx).classList.add('active');
+            console.log(idx);
+
+            break;
+        case 40:
+            if (idx >= 0)
+                Lis.item(idx).classList.remove('active');
+            idx++;
+            if (idx > length) idx = 0;
+            Lis.item(idx).classList.add('active');
+            console.log(idx);
+
+            break;
+        case 13:
+            input.value = Lis.item(idx).textContent;
+            dropdown.textContent = '';
+    }
+}
+
 
 
 //Оброботчики событий
@@ -193,8 +245,19 @@ inputCitiesTo.addEventListener('input', () => {
     showCities(citiesList, inputCitiesTo, dropDownCitiesTo);
 });
 
+document.addEventListener('keydown', (e) => {
+    if (e.keyCode === 40 || e.keyCode === 38 || e.keyCode === 13) {
+        if (dropDownCitiesFrom.children.length)
+            keyControl(e, inputCitiesFrom, dropDownCitiesFrom);
+
+        if (dropDownCitiesTo.children.length)
+            keyControl(e, inputCitiesTo, dropDownCitiesTo);
+    }
+});
+
 formSearch.addEventListener('submit', (event) => {
     event.preventDefault(); //отключаем поведение по умолчанию (перезагрузке при отправке формы)
+    event.target.setAtr
 
     //Получаем нужный код города из списка городов соответсвующий вводимому значению в инпут
     from = citiesList.find((item) => { return inputCitiesFrom.value == item.name });
